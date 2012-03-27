@@ -1,4 +1,5 @@
-#Poof A
+#Poof
+##A tool for copying & pasting imgur links
 
 About
 =====
