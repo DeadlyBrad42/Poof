@@ -1,5 +1,4 @@
-#Poof
-###Tagline
+#Poof A
 
 About
 =====
@@ -36,3 +35,5 @@ Misc.
 =====
 
 As with most GitHub projects, Poof is a continual work in progress. There's currently a lot of features I have in mind, and quite a bit more bugs in the code, but I'll be hacking on it for the near future, so stay tuned.
+
+Git was semi-inspired by [Zachary Holman's Boom](https://github.com/holman/boom).
