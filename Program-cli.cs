@@ -72,7 +72,7 @@ namespace Poof
 						tags.Add(arg);
 					}
 
-					PasteDBRow pasteResult = db.getTopPostByTags(tags);
+					PasteDBRow pasteResult = db.getTopPasteByTags(tags);
 					if (pasteResult != null)
 					{
 						displayPaste(pasteResult.uploadAddress);

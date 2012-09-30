@@ -11,7 +11,7 @@ namespace Poof
 		[Conditional("DEBUG")]
 		public static void WriteLine(String str)
 		{
-			Debug.WriteLine(str);
+			System.Diagnostics.Debug.WriteLine(str);
 		}
 	}
 }

@@ -52,7 +52,7 @@ namespace Poof
 				results = new List<PasteDBRow>();
 
 				//List<PasteDBRow> dbResults = db.getTopPostsByTags(tags);
-				PasteDBRow dbResults = db.getTopPostByTags(tags);
+				PasteDBRow dbResults = db.getTopPasteByTags(tags);
 				if (dbResults != null)
 				{
 					results.Add(dbResults);
