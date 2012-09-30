@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data.OleDb;
-using System.Data;
-using System.Collections;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Reflection;
 
@@ -38,8 +33,6 @@ namespace Poof
 		/// <returns>True on success, false on failure.</returns>
 		public Boolean Connect()
 		{
-			Console.WriteLine("connecting to db @" + dbLocation);
-
 			connection = new OleDbConnection();
 			connection.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + dbLocation;
 
@@ -49,12 +42,11 @@ namespace Poof
 			}
 			catch (Exception ex)
 			{
-				Program_cli.debugMsg(ex.ToString());
 				//throw new Exception("Failed to connect to data base.");
+				Debug.WriteLine("Failed to connect to database:");
+				Debug.WriteLine(ex.ToString());
 				return false;
 			}
-
-			Console.WriteLine("connected!");
 
 			return true;
 		}
@@ -88,9 +80,10 @@ namespace Poof
 				objFileStream.Close();
 
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				Console.WriteLine("failed.");
+				Debug.WriteLine("failed to write blank database:");
+				Debug.WriteLine(ex.ToString());
 				return false;
 			}
 
@@ -107,20 +100,19 @@ namespace Poof
 			try
 			{
 				string now = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
-				Program_cli.debugMsg(now);
 
 				string insertCommand = @"INSERT INTO Pictures (pictures_location, pictures_uploadAddress, pictures_lastPaste) VALUES ('" +
 					newRow.location + @"', '" +
 					newRow.uploadAddress + @"', '" +
 					DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss") + @"');";
 
-				Program_cli.debugMsg(insertCommand);
 				OleDbCommand command = new OleDbCommand(insertCommand, connection);
 				command.ExecuteNonQuery();
 			}
 			catch (Exception ex)
 			{
-				Program_cli.errorMsg(ex.ToString());
+				Debug.WriteLine("Failed to insert new row:");
+				Debug.WriteLine(ex.ToString());
 				return false;
 			}
 
@@ -136,10 +128,8 @@ namespace Poof
 		{
 			List<PasteDBRow> resultSet = new List<PasteDBRow>();
 
-			Program_cli.debugMsg("searching for " + tag);
-
 			string whereCommand = @"SELECT Pictures.pictures_ID, Pictures.pictures_location, pictures.pictures_uploadAddress, pictures.pictures_lastPaste FROM Pictures LEFT JOIN Tags ON Pictures.pictures_ID = Tags.pictures_ID WHERE ((Tags.tags_tag)='" + tag + @"')";
-			Program_cli.debugMsg(whereCommand);
+			//Debug.WriteLine(whereCommand);
 			OleDbCommand command = new OleDbCommand(whereCommand, connection);
 
 			// Add this to the set of results
@@ -164,12 +154,13 @@ namespace Poof
 			}
 			catch (OleDbException ex)
 			{
-				Program_cli.errorMsg(ex.ToString());
+				Debug.WriteLine("Failed to get paste address from tag:");
+				Debug.WriteLine(ex.ToString());
 				return null;
 			}
 			finally
 			{
-				Program_cli.debugMsg("resultSet.count : " + resultSet.Count);
+				Debug.WriteLine("Results for tag '" + tag + "': " + resultSet.Count);
 			}
 
 			if (resultSet.Count > 0)
@@ -189,10 +180,8 @@ namespace Poof
 
 			PasteDBRow result = new PasteDBRow();
 
-			Program_cli.debugMsg("Searching for filename: " + filename);
-
 			string whereCommand = @"SELECT Pictures.pictures_ID, Pictures.pictures_location, pictures.pictures_uploadAddress, pictures.pictures_lastPaste FROM Pictures WHERE ((pictures.pictures_location)='" + filename + @"')";
-			Program_cli.debugMsg(whereCommand);
+			//Debug.WriteLine(whereCommand);
 			OleDbCommand command = new OleDbCommand(whereCommand, connection);
 
 			// Retrieve the result from the database
@@ -213,7 +202,8 @@ namespace Poof
 			}
 			catch (OleDbException ex)
 			{
-				Program_cli.errorMsg(ex.ToString());
+				Debug.WriteLine("Failed to get paste address from filename:");
+				Debug.WriteLine(ex.ToString());
 				return null;
 			}
 
@@ -229,10 +219,8 @@ namespace Poof
 		{
 			PasteDBRow result = new PasteDBRow();
 
-			Program_cli.debugMsg("searching for ID:" + ID);
-
 			string whereCommand = @"SELECT Pictures.pictures_ID, Pictures.pictures_location, pictures.pictures_uploadAddress, pictures.pictures_lastPaste FROM Pictures WHERE ((pictures.pictures_ID)=" + ID + @")";
-			Program_cli.debugMsg(whereCommand);
+			//Debug.WriteLine(whereCommand);
 			OleDbCommand command = new OleDbCommand(whereCommand, connection);
 
 			// Retrieve the result from the database
@@ -251,12 +239,10 @@ namespace Poof
 			}
 			catch (OleDbException ex)
 			{
-				Program_cli.errorMsg(ex.ToString());
+				Debug.WriteLine("Failed to get paste address from ID:");
+				Debug.WriteLine(ex.ToString());
+
 				return null;
-			}
-			finally
-			{
-				Program_cli.debugMsg("results...");
 			}
 
 			return result;
@@ -280,7 +266,7 @@ namespace Poof
 				//TODO: remove all punctuation marks from the tag, make lowercase
 
 				String addTagCommand = "INSERT INTO Tags (tags_tag, pictures_ID) VALUES ('" + tag + "', " + pictureToTag.id + ")";
-				Program_cli.debugMsg(addTagCommand);
+				//Debug.WriteLine(addTagCommand);
 				OleDbCommand command = new OleDbCommand(addTagCommand, connection);
 				if (command.ExecuteNonQuery() == 0) success = false;
 			}
@@ -339,11 +325,9 @@ namespace Poof
 		/// <returns>Returns the rows in the database as a List of PasteDBRows</returns>
 		public List<PasteDBRow> returnAll()
 		{
-			Program_cli.debugMsg("Returning the database");
-
 			string getPicturesCommand = @"SELECT Pictures.pictures_ID, Pictures.pictures_location, Pictures.pictures_UploadAddress, Pictures.pictures_lastPaste FROM Pictures";
 
-			Program_cli.debugMsg(getPicturesCommand);
+			//Debug.WriteLine(getPicturesCommand);
 			OleDbCommand command = new OleDbCommand(getPicturesCommand, connection);
 
 			// Build the set of results
@@ -367,7 +351,7 @@ namespace Poof
 					string getTagsCommand = @"SELECT Tags.tags_tag FROM Tags WHERE Tags.pictures_ID=" + newRow.id;
 					OleDbCommand tagsCommand = new OleDbCommand(getTagsCommand, connection);
 					OleDbDataReader tagsReader = tagsCommand.ExecuteReader();
-					Program_cli.debugMsg(getTagsCommand);
+					//Debug.WriteLine(getTagsCommand);
 					while (tagsReader.Read())
 					{
 						newRow.tags.Add(tagsReader.GetString(0));
@@ -379,12 +363,13 @@ namespace Poof
 			}
 			catch (OleDbException ex)
 			{
-				Program_cli.errorMsg(ex.ToString());
+				Debug.WriteLine("Failed to get all rows from database:");
+				Debug.WriteLine(ex.ToString());
 				return null;
 			}
 			finally
 			{
-				Program_cli.debugMsg("resultSet.count : " + resultSet.Count);
+				Debug.WriteLine("Results for 'return db': " + resultSet.Count);
 			}
 
 			return resultSet;
@@ -397,15 +382,13 @@ namespace Poof
 		/// <returns>True on success, false on failure. A failure includes an ID in $updatedRow that doesn't exist.</returns>
 		public Boolean updateRow(PasteDBRow updatedRow)
 		{
-			Program_cli.debugMsg("Updating row #" + updatedRow.id);
-
 			string updateCommand = "UPDATE Pictures SET " +
 				"Location='" + updatedRow.location + "', " +
 				"Upload_Address='" + updatedRow.uploadAddress + "', " +
 				"Last_Paste='" + updatedRow.lastPasteDate + "' " +
 				"WHERE ID=" + updatedRow.id;
 
-			Program_cli.debugMsg(updateCommand);
+			//Debug.WriteLine(updateCommand);
 			OleDbCommand command = new OleDbCommand(updateCommand, connection);
 
 			return true;
@@ -418,12 +401,10 @@ namespace Poof
 		/// <returns>True on success, false on failure. A failure includes attempting to delete a row from the database that doesn't exist.</returns>
 		public Boolean deleteRow(int rowID)
 		{
-			Program_cli.debugMsg("Deleting row #" + rowID);
-
 			string deleteCommand = "DELETE FROM Pictures " +
 				"WHERE ID=" + rowID;
 
-			Program_cli.debugMsg(deleteCommand);
+			//Debug.WriteLine(deleteCommand);
 			OleDbCommand command = new OleDbCommand(deleteCommand, connection);
 
 			return true;

@@ -50,40 +50,49 @@ namespace Poof
 			else
 			{
 				results = new List<PasteDBRow>();
-				results.Add(db.getTopPostByTags(tags));
+
+				//List<PasteDBRow> dbResults = db.getTopPostsByTags(tags);
+				PasteDBRow dbResults = db.getTopPostByTags(tags);
+				if (dbResults != null)
+				{
+					results.Add(dbResults);
+				}
 			}
 
-			// Add rows to datagrid
-			object[] tempobj = new object[3];
-			foreach (PasteDBRow resultRow in results)
+			if (results.Count > 0 || results[0] == null)
 			{
-				// Set image preview
-				Image preview = Image.FromFile(resultRow.location);
-				int newHeight = preview.Height;
-				int newWidth = preview.Width;
-				if (preview.Width > preview.Height)
+				// Add rows to datagrid
+				object[] tempobj = new object[3];
+				foreach (PasteDBRow resultRow in results)
 				{
-					newWidth = dgd_ROWHEIGHT;
-					newHeight = (int)(((double)dgd_ROWHEIGHT / preview.Width) * preview.Height);
+					// Set image preview
+					Image preview = Image.FromFile(resultRow.location);
+					int newHeight = preview.Height;
+					int newWidth = preview.Width;
+					if (preview.Width > preview.Height)
+					{
+						newWidth = dgd_ROWHEIGHT;
+						newHeight = (int)(((double)dgd_ROWHEIGHT / preview.Width) * preview.Height);
+					}
+					else
+					{
+						newHeight = dgd_ROWHEIGHT;
+						newWidth = (int)(((double)dgd_ROWHEIGHT / preview.Height) * preview.Width);
+					}
+					tempobj[0] = new Bitmap(preview, newWidth, newHeight);
+
+					// Add in the upload address, and tag list
+					tempobj[1] = resultRow.uploadAddress;
+					tempobj[2] = resultRow.TagsAsString;
+
+					dgd_Results.Rows.Add(tempobj);
 				}
-				else
+
+				// Size all the rows to be the proper height
+				for (int rowCount = 0; rowCount < dgd_Results.Rows.Count; rowCount++)
 				{
-					newHeight = dgd_ROWHEIGHT;
-					newWidth = (int)(((double)dgd_ROWHEIGHT / preview.Height) * preview.Width);
+					dgd_Results.Rows[rowCount].Height = dgd_ROWHEIGHT;
 				}
-				tempobj[0] = new Bitmap(preview, newWidth, newHeight);
-
-				// Add in the upload address, and tag list
-				tempobj[1] = resultRow.uploadAddress;
-				tempobj[2] = resultRow.TagsAsString;
-
-				dgd_Results.Rows.Add(tempobj);
-			}
-
-			// Size all the rows to be the proper height
-			for (int rowCount = 0; rowCount < dgd_Results.Rows.Count; rowCount++)
-			{
-				dgd_Results.Rows[rowCount].Height = dgd_ROWHEIGHT;
 			}
 		}
 
