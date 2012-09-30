@@ -12,10 +12,9 @@ namespace Poof
 		[STAThread]
 		static void Main()
 		{
-			Console.WriteLine("starting...");
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new SearchForm());
+			Application.Run(new frm_Search());
 
 
 			// On first startup, set the homeDirectory (default to @"%userprofile%\Poof\")

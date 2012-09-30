@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F43076E5-0B87-441A-A86F-3B9C4EE58D58}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Poof</RootNamespace>
     <AssemblyName>Poof</AssemblyName>
@@ -69,12 +69,18 @@
   <ItemGroup>
     <Compile Include="CmdUtil.cs" />
     <Compile Include="Debug.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="SearchForm.cs">
+    <Compile Include="frm_Options.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SearchForm.Designer.cs">
-      <DependentUpon>SearchForm.cs</DependentUpon>
+    <Compile Include="frm_Options.Designer.cs">
+      <DependentUpon>frm_Options.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="frm_Search.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_Search.Designer.cs">
+      <DependentUpon>frm_Search.cs</DependentUpon>
     </Compile>
     <Compile Include="ImageUploadAPI.cs" />
     <Compile Include="ImgurUpload.cs" />
@@ -114,8 +120,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SearchForm.resx">
-      <DependentUpon>SearchForm.cs</DependentUpon>
+    <EmbeddedResource Include="frm_Search.resx">
+      <DependentUpon>frm_Search.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="poof_blank.accdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -19,7 +19,7 @@ namespace Poof
 
 		public Boolean addNewHit(int newPictureID)
 		{
-			Program_cli.debugMsg("Got a hit for ID:" + newPictureID);
+			Debug.WriteLine("Got a hit for ID:" + newPictureID);
 
 			if (pictureID.Contains(newPictureID))
 			{
@@ -48,7 +48,7 @@ namespace Poof
 				}
 			}
 
-			Program_cli.debugMsg("Most hit ID: " + pictureID[currentMaxLocation]);
+			Debug.WriteLine("Most hit ID: " + pictureID[currentMaxLocation]);
 			return pictureID[currentMaxLocation];
 		}
 
