@@ -31,7 +31,16 @@ namespace Poof
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(ex.ToString());
+
+				MessageBox.Show(
+					"Unable to connect to the database. It's supposed to be in '" + Properties.Settings.Default.homeDirectory + "', so make sure you didn't move it!",
+					"Error connecting to the database.",
+					MessageBoxButtons.OK,
+					MessageBoxIcon.Error
+				);
+				
+
+				this.Close();
 			}
 
 			FillDataGrid(null);
@@ -51,7 +60,7 @@ namespace Poof
 			{
 				results = new List<PasteDBRow>();
 
-				//List<PasteDBRow> dbResults = db.getTopPostsByTags(tags);
+				//List<PasteDBRow> dbResults = db.getTopPastesByTags(tags);
 				PasteDBRow dbResults = db.getTopPasteByTags(tags);
 				if (dbResults != null)
 				{
@@ -103,7 +112,7 @@ namespace Poof
 
 		private void dgd_Results_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
-			MessageBox.Show("Cell edited!");
+			MessageBox.Show("Cell edited! -- re-save the tags for that paste");
 			// Clear out all tags associated with that picture
 			// Add all the new tags from the edit
 		}
@@ -128,6 +137,16 @@ namespace Poof
 		private void dgd_Results_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
 			MessageBox.Show("Cell double-clicked! -- Copy address, minimize to tray");
+		}
+
+		private void btn_Options_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show("Open an options window here");
+		}
+
+		private void btn_Scan_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show("Rescan the Poof library");
 		}
 	}
 }

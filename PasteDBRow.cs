@@ -41,7 +41,7 @@ namespace Poof
 		{
 			get
 			{
-				return String.Join(",", tags);
+				return String.Join(" ", tags);
 			}
 		}
 	}

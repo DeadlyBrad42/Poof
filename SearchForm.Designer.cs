@@ -104,16 +104,18 @@
 			this.btn_Options.TabIndex = 3;
 			this.btn_Options.Text = "Options";
 			this.btn_Options.UseVisualStyleBackColor = true;
+			this.btn_Options.Click += new System.EventHandler(this.btn_Options_Click);
 			// 
 			// btn_Scan
 			// 
-			this.btn_Scan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btn_Scan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.btn_Scan.Location = new System.Drawing.Point(12, 520);
 			this.btn_Scan.Name = "btn_Scan";
 			this.btn_Scan.Size = new System.Drawing.Size(100, 30);
 			this.btn_Scan.TabIndex = 4;
 			this.btn_Scan.Text = "Rescan";
 			this.btn_Scan.UseVisualStyleBackColor = true;
+			this.btn_Scan.Click += new System.EventHandler(this.btn_Scan_Click);
 			// 
 			// SearchForm
 			// 
