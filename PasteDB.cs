@@ -18,14 +18,14 @@ namespace Poof
 		////////////////////////////////////////////////////////////////////////
 
 		/// <summary>
-		/// The default constructor for an empty "Poof-compliant" database
+		/// The default constructor for an empty "Poof-compliant" database.
 		/// </summary>
 		public PasteDB()
 		{
 		}
 
 		/// <summary>
-		/// The default constructor for a "Poof-compliant" database with a file location
+		/// The default constructor for a "Poof-compliant" database with a file location.
 		/// </summary>
 		/// <param name="location"></param>
 		public PasteDB(string location)
@@ -187,6 +187,11 @@ namespace Poof
 				return null;
 		}
 
+		/// <summary>
+		/// Searches the database for the row that matches the supplied filename.
+		/// </summary>
+		/// <param name="tags">The filename to search for.</param>
+		/// <returns>A PasteDBRow that corresponds to the supplied filename. </returns>
 		public PasteDBRow getPasteByFilename(String filename)
 		{
 			//TODO: Would be totally cool if this function would detect if filename was relative or absolute, and acted accordingly
@@ -270,7 +275,7 @@ namespace Poof
 		/// Adds the tags to the tag table, and links them to the specified Picture ID.
 		/// </summary>
 		/// <param name="pictureID">The Picture ID to associate the tags with.</param>
-		/// <param name="tags">A list of the tags to add</param>
+		/// <param name="tags">A list of the tags to add.</param>
 		/// <returns>True or false, depending on the success of the database INSERT.</returns>
 		public Boolean addTagsToPictureByLocation(String pictureLocation, List<String> tags)			//STUB
 		{
@@ -292,10 +297,29 @@ namespace Poof
 			return success;
 		}
 
+		public Boolean addTagsToPictureByID(int pictureID, List<String> tags)
+		{
+			Boolean success = true;
+
+			PasteDBRow pictureToTag = getPasteByID(pictureID);
+
+			foreach (String tag in tags)
+			{
+				//TODO: remove all punctuation marks from the tag, make lowercase
+
+				String addTagCommand = "INSERT INTO Tags (tags_tag, pictures_ID) VALUES ('" + tag + "', " + pictureToTag.id + ")";
+				//Debug.WriteLine(addTagCommand);
+				OleDbCommand command = new OleDbCommand(addTagCommand, connection);
+				if (command.ExecuteNonQuery() == 0) success = false;
+			}
+
+			return success;
+		}
+
 		/// <summary>
 		/// Get a list of PasteDBRow, sorted in order of decreasing relevance, that match a list of supplied tags.
 		/// </summary>
-		/// <param name="tags">A list of tags to search for</param>
+		/// <param name="tags">A list of tags to search for.</param>
 		/// <returns>A sorted list of PasteDBRows.</returns>
 		public List<PasteDBRow> getPastesByTags(List<String> tags)
 		{
@@ -326,7 +350,7 @@ namespace Poof
 		/// <summary>
 		/// Get a PasteDBRow that matches a list of supplied tags.
 		/// </summary>
-		/// <param name="tags">A list of tags to search for</param>
+		/// <param name="tags">A list of tags to search for.</param>
 		/// <returns>A PasteDBRow that most closely matches the supplied tags.</returns>
 		public PasteDBRow getTopPasteByTags(List<String> tags)
 		{
@@ -353,7 +377,7 @@ namespace Poof
 		/// <summary>
 		/// Returns all the rows in the database.
 		/// </summary>
-		/// <returns>Returns the rows in the database as a list of PasteDBRows</returns>
+		/// <returns>Returns the rows in the database as a list of PasteDBRows.</returns>
 		public List<PasteDBRow> returnAll()
 		{
 			string getPicturesCommand = @"SELECT Pictures.pictures_ID, Pictures.pictures_location, Pictures.pictures_UploadAddress, Pictures.pictures_lastPaste FROM Pictures";
@@ -427,6 +451,7 @@ namespace Poof
 
 			//Debug.WriteLine(updateCommand);
 			OleDbCommand command = new OleDbCommand(updateCommand, connection);
+			command.ExecuteNonQuery();
 
 			return true;
 		}
@@ -449,8 +474,26 @@ namespace Poof
 
 			//Debug.WriteLine(deleteCommand);
 			OleDbCommand command = new OleDbCommand(deleteCommand, connection);
+			command.ExecuteNonQuery();
 
 			return true;
+		}
+
+		/// <summary>
+		/// Deletes all the tags for the specified pictureID
+		/// </summary>
+		/// <param name="pictureID">The pictureID to search for.</param>
+		/// <returns>True on successful deletion, false on failure.</returns>
+		public Boolean deleteAllTagsForPictureID(int pictureID)
+		{
+			String deleteCommand = "DELETE FROM Tags " + 
+				"WHERE pictures_ID=" + pictureID;
+
+			//Debug.WriteLine(deleteCommand);
+			OleDbCommand command = new OleDbCommand(deleteCommand, connection);
+			command.ExecuteNonQuery();
+
+			return false;
 		}
 	}
 }

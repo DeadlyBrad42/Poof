@@ -29,13 +29,10 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frm_Search));
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			this.tbx_Search = new System.Windows.Forms.TextBox();
 			this.dgd_Results = new System.Windows.Forms.DataGridView();
-			this.dcl_preview = new System.Windows.Forms.DataGridViewImageColumn();
-			this.dcl_Address = new System.Windows.Forms.DataGridViewLinkColumn();
-			this.dcl_Tags = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.btn_Options = new System.Windows.Forms.Button();
 			this.btn_Scan = new System.Windows.Forms.Button();
 			this.pnl_UploadProgress = new System.Windows.Forms.Panel();
@@ -43,6 +40,10 @@
 			this.nti_NotificationIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			this.cmu_NotificationIconContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.cmi_Exit = new System.Windows.Forms.ToolStripMenuItem();
+			this.dcl_preview = new System.Windows.Forms.DataGridViewImageColumn();
+			this.dcl_Address = new System.Windows.Forms.DataGridViewLinkColumn();
+			this.dcl_Tags = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.dcl_pictureID = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.dgd_Results)).BeginInit();
 			this.pnl_UploadProgress.SuspendLayout();
 			this.cmu_NotificationIconContextMenu.SuspendLayout();
@@ -69,7 +70,8 @@
 			this.dgd_Results.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dcl_preview,
             this.dcl_Address,
-            this.dcl_Tags});
+            this.dcl_Tags,
+            this.dcl_pictureID});
 			this.dgd_Results.Location = new System.Drawing.Point(12, 38);
 			this.dgd_Results.Name = "dgd_Results";
 			this.dgd_Results.Size = new System.Drawing.Size(760, 476);
@@ -77,32 +79,6 @@
 			this.dgd_Results.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgd_Results_CellClick);
 			this.dgd_Results.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgd_Results_CellDoubleClick);
 			this.dgd_Results.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgd_Results_CellEndEdit);
-			// 
-			// dcl_preview
-			// 
-			this.dcl_preview.HeaderText = "Preview";
-			this.dcl_preview.Name = "dcl_preview";
-			this.dcl_preview.ReadOnly = true;
-			this.dcl_preview.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-			this.dcl_preview.Width = 200;
-			// 
-			// dcl_Address
-			// 
-			this.dcl_Address.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-			dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-			this.dcl_Address.DefaultCellStyle = dataGridViewCellStyle2;
-			this.dcl_Address.HeaderText = "Address";
-			this.dcl_Address.Name = "dcl_Address";
-			this.dcl_Address.ReadOnly = true;
-			this.dcl_Address.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-			this.dcl_Address.Width = 51;
-			// 
-			// dcl_Tags
-			// 
-			this.dcl_Tags.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-			this.dcl_Tags.HeaderText = "Tags";
-			this.dcl_Tags.Name = "dcl_Tags";
-			this.dcl_Tags.Resizable = System.Windows.Forms.DataGridViewTriState.False;
 			// 
 			// btn_Options
 			// 
@@ -167,8 +143,40 @@
 			// cmi_Exit
 			// 
 			this.cmi_Exit.Name = "cmi_Exit";
-			this.cmi_Exit.Size = new System.Drawing.Size(127, 22);
+			this.cmi_Exit.Size = new System.Drawing.Size(67, 22);
 			this.cmi_Exit.Text = "Exit";
+			// 
+			// dcl_preview
+			// 
+			this.dcl_preview.HeaderText = "Preview";
+			this.dcl_preview.Name = "dcl_preview";
+			this.dcl_preview.ReadOnly = true;
+			this.dcl_preview.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+			this.dcl_preview.Width = 200;
+			// 
+			// dcl_Address
+			// 
+			this.dcl_Address.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+			this.dcl_Address.DefaultCellStyle = dataGridViewCellStyle1;
+			this.dcl_Address.HeaderText = "Address";
+			this.dcl_Address.Name = "dcl_Address";
+			this.dcl_Address.ReadOnly = true;
+			this.dcl_Address.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+			this.dcl_Address.Width = 51;
+			// 
+			// dcl_Tags
+			// 
+			this.dcl_Tags.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+			this.dcl_Tags.HeaderText = "Tags";
+			this.dcl_Tags.Name = "dcl_Tags";
+			this.dcl_Tags.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+			// 
+			// dcl_pictureID
+			// 
+			this.dcl_pictureID.HeaderText = "Picture ID";
+			this.dcl_pictureID.Name = "dcl_pictureID";
+			this.dcl_pictureID.ReadOnly = true;
 			// 
 			// frm_Search
 			// 
@@ -201,14 +209,15 @@
 		private System.Windows.Forms.TextBox tbx_Search;
 		private System.Windows.Forms.DataGridView dgd_Results;
 		private System.Windows.Forms.Button btn_Options;
-		private System.Windows.Forms.DataGridViewImageColumn dcl_preview;
-		private System.Windows.Forms.DataGridViewLinkColumn dcl_Address;
-		private System.Windows.Forms.DataGridViewTextBoxColumn dcl_Tags;
 		private System.Windows.Forms.Button btn_Scan;
 		private System.Windows.Forms.Panel pnl_UploadProgress;
 		private System.Windows.Forms.ProgressBar pgb_UploadProgress;
 		private System.Windows.Forms.NotifyIcon nti_NotificationIcon;
 		private System.Windows.Forms.ContextMenuStrip cmu_NotificationIconContextMenu;
 		private System.Windows.Forms.ToolStripMenuItem cmi_Exit;
+		private System.Windows.Forms.DataGridViewImageColumn dcl_preview;
+		private System.Windows.Forms.DataGridViewLinkColumn dcl_Address;
+		private System.Windows.Forms.DataGridViewTextBoxColumn dcl_Tags;
+		private System.Windows.Forms.DataGridViewTextBoxColumn dcl_pictureID;
 	}
 }

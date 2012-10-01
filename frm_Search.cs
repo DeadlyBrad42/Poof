@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace Poof
 {
@@ -14,14 +15,12 @@ namespace Poof
 	{
 		private static PasteDB db;
 		const int dgd_ROWHEIGHT = 200;
-		bool visible = true;
+		bool visible = false;
 
 		// Initailize the form
 		public frm_Search()
 		{
 			InitializeComponent();
-
-			Hide();
 
 			try
 			{
@@ -46,7 +45,17 @@ namespace Poof
 			}
 
 			FillDataGrid(null);
-			Hide();
+		}
+
+		// Forces the window to be hidden on start up
+		protected override void SetVisibleCore(bool value)
+		{
+			if (!IsHandleCreated && value)
+			{
+				value = false;
+				CreateHandle();
+			}
+			base.SetVisibleCore(value);
 		}
 
 		// Repopulate the data grid with the new search results
@@ -75,7 +84,7 @@ namespace Poof
 			if (results.Count > 0)
 			{
 				// Add rows to datagrid
-				object[] tempobj = new object[3];
+				object[] tempobj = new object[4];
 				foreach (PasteDBRow resultRow in results)
 				{
 					// Set image preview
@@ -97,6 +106,7 @@ namespace Poof
 					// Add in the upload address, and tag list
 					tempobj[1] = resultRow.uploadAddress;
 					tempobj[2] = resultRow.TagsAsString;
+					tempobj[3] = resultRow.id;
 
 					dgd_Results.Rows.Add(tempobj);
 				}
@@ -118,9 +128,15 @@ namespace Poof
 		// Add the new tags to the database
 		private void dgd_Results_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
-			MessageBox.Show("Cell edited! -- re-save the tags for that paste");
+			// Get ID of edited picture
+			int pictureID = Int32.Parse(dgd_Results.Rows[e.RowIndex].Cells[3].Value.ToString());
+			List<string> newTags = dgd_Results.Rows[e.RowIndex].Cells[2].Value.ToString().Split(' ').ToList();
+
 			// Clear out all tags associated with that picture
+			db.deleteAllTagsForPictureID(pictureID);
+
 			// Add all the new tags from the edit
+			db.addTagsToPictureByID(pictureID, newTags);
 		}
 
 		// Click a cell to edit it or select the row
@@ -144,13 +160,13 @@ namespace Poof
 		// Select a result
 		private void dgd_Results_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
-			MessageBox.Show("Cell double-clicked! -- Copy address, minimize to tray");
+			getPasteForRow(e.RowIndex);
 		}
 
 		// Open the options form
 		private void btn_Options_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show("Open an options window here");
+			MessageBox.Show("Open an options window here...");
 		}
 
 		// Rescan the library folder for new images
@@ -159,6 +175,24 @@ namespace Poof
 			btn_Scan.Enabled = false;
 			pnl_UploadProgress.Show();
 
+			BackgroundWorker workerThread = new BackgroundWorker();
+			workerThread.DoWork += new DoWorkEventHandler(uploadNewPictures);
+			workerThread.RunWorkerCompleted += new RunWorkerCompletedEventHandler(uploadNewPictures_completed);
+			workerThread.RunWorkerAsync();
+		}
+
+		// Handler for when background work is finished
+		private void uploadNewPictures_completed(object sender, RunWorkerCompletedEventArgs e)
+		{
+			pnl_UploadProgress.Hide();
+			btn_Scan.Enabled = true;
+
+			FillDataGrid(null);
+		}
+
+		// Handler for doing background work
+		private void uploadNewPictures(object sender, DoWorkEventArgs e)
+		{
 			string[] fileTypes = { "*.jpg", "*.jpeg", "*.gif", "*.png" };
 			List<string> fileList = new List<string>();
 
@@ -173,7 +207,13 @@ namespace Poof
 				}
 			}
 
-			pgb_UploadProgress.Maximum = fileList.Count;
+			//setUploadProgressMax(fileList.Count);
+			pgb_UploadProgress.Invoke(
+				(MethodInvoker)delegate()
+				{
+					pgb_UploadProgress.Maximum = fileList.Count;
+				}
+			);
 
 			// Proceed through the file list, adding any pictures that aren't already in the database
 			for (int count = 0; count < fileList.Count; count++)
@@ -185,7 +225,14 @@ namespace Poof
 					try
 					{
 						Debug.WriteLine("Image " + (count + 1) + "/" + fileList.Count + " (" + fileList[count] + ") : Uploading to Imgur...");
-						pgb_UploadProgress.Value = count;
+						
+						//setUploadProgressCurrent(count);
+						pgb_UploadProgress.Invoke(
+							(MethodInvoker)delegate()
+							{
+								pgb_UploadProgress.Value = count;
+							}
+						);
 
 						ImageUploadAPI imgur = new ImgurUpload();
 
@@ -212,9 +259,16 @@ namespace Poof
 					Debug.WriteLine("Image " + (count + 1) + "/" + fileList.Count + " (" + fileList[count] + ") : Already in database!");
 				}
 			}
+		}
 
-			pnl_UploadProgress.Hide();
-			btn_Scan.Enabled = true;
+		private void setUploadProgressMax(int max)
+		{
+			pgb_UploadProgress.Maximum = max;
+		}
+
+		private void setUploadProgressCurrent(int currentValue)
+		{
+			pgb_UploadProgress.Value = currentValue;
 		}
 
 		// Handle "special" keys while focus is in the textbox
@@ -223,16 +277,17 @@ namespace Poof
 			switch(e.KeyCode)
 			{
 				case Keys.Escape:
-					this.Close();
+					toTray();
 					break;
 				case Keys.Enter:
-					MessageBox.Show("Copy image address to clipboard, hide form");
+					getPasteForRow(0);
+					toTray();
 					break;
 				case Keys.Up:
-					MessageBox.Show("Move datagrid selection up, if it's at the top, move focus to text box");
+					//MessageBox.Show("Move datagrid selection up, if it's at the top, move focus to text box");
 					break;
 				case Keys.Down:
-					MessageBox.Show("move datagrid selection down, if it's at the bottom, move focus to text box");
+					//MessageBox.Show("move datagrid selection down, if it's at the bottom, move focus to text box");
 					break;
 			}
 		}
@@ -244,13 +299,11 @@ namespace Poof
 			{
 				if (visible)
 				{
-					Hide();
-					visible = false;
+					toTray();
 				}
 				else
 				{
-					Show();
-					visible = true;
+					fromTray();
 				}
 			}
 			else if (e.Button == MouseButtons.Right)
@@ -259,11 +312,31 @@ namespace Poof
 			}
 		}
 
+		private void toTray()
+		{
+			this.Hide();
+			visible = false;
+		}
+
+		private void fromTray()
+		{
+			tbx_Search.Clear();
+			FillDataGrid(null);
+
+			this.Show();
+			visible = true;
+		}
+
 		// Notification context menu click
 		private void cmu_NotificationIconContextMenu_MouseClick(object sender, MouseEventArgs e)
 		{
 			// We're just kind of assuming the user hit exit, since that's the only option there is
 			this.Close();
+		}
+
+		private void getPasteForRow(int RowID)
+		{
+			Clipboard.SetText(dgd_Results.Rows[RowID].Cells[1].Value.ToString());
 		}
 	}
 }
