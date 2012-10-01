@@ -35,7 +35,7 @@ namespace Poof.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Brad\\Poof\\poof.accdb")]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Brad\\Poof\\")]
         public string homeDirectory {
             get {
                 return ((string)(this["homeDirectory"]));

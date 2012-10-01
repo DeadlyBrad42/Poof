@@ -11,7 +11,7 @@
       <Value Profile="(Default)">Provider=Microsoft.ACE.OLEDB.12.0;Data Source=|DataDirectory|\poof.accdb</Value>
     </Setting>
     <Setting Name="homeDirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\Users\Brad\Poof\poof.accdb</Value>
+      <Value Profile="(Default)">C:\Users\Brad\Poof\</Value>
     </Setting>
     <Setting Name="poof_blankConnectionString" Type="(Connection string)" Scope="Application">
       <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
